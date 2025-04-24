@@ -9,6 +9,9 @@ class ListingsSpider(scrapy.Spider):
         #get listing cards
         cards = response.xpath(".//div[@class='result-cards']/div[@id]")
 
+        #next page url
+        next_page_url = response.xpath("//a[@class = ' next']/@href").get()
+
         for card in cards:
             Real_estate_company = card.xpath("./div/div/a[1]/@href").get()
             Real_estate_agent = card.xpath("./div/div/a[2]/text()").get()
@@ -16,6 +19,8 @@ class ListingsSpider(scrapy.Spider):
             
             #follow url
             detail_url = card.xpath(".//a[starts-with(normalize-space(text()), 'USD ')]/@href").get()
+
+           
 
             page1_data = {
                 "Company": Real_estate_company,
@@ -27,6 +32,9 @@ class ListingsSpider(scrapy.Spider):
                 yield scrapy.Request(url = f"https://www.property.co.zw/{detail_url}",
                                      callback=self.listing_details,
                                      meta={"page1_data": page1_data})
+        #pagination
+        yield scrapy.Request(url = next_page_url , callback = self.parse)
+        #print("next page")
 
     def listing_details(self,response):
         #data from page1 
@@ -64,6 +72,9 @@ class ListingsSpider(scrapy.Spider):
         #Listing ref
         Listing_ref = response.xpath("//span[contains(text(), 'Listing ref')]/text()").get()
 
+
+        
+
         #meta for location data 
         yield  {
             "Listing_ref": Listing_ref,
@@ -77,9 +88,13 @@ class ListingsSpider(scrapy.Spider):
             "land_area":land_area,
             "Description":Description,
             "amenities":amenities_list,
+            "next_page":next_page_url,
         }
 
+      
+
         
+
 
 
         
