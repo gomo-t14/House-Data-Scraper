@@ -25,6 +25,9 @@ class ListingsSpider(scrapy.Spider):
             #follow url
             detail_url = card.xpath(".//a[starts-with(normalize-space(text()), 'USD ')]/@href").get()
 
+            #full request url for followed  listings
+            follow_url = f"https://www.property.co.zw/{detail_url}"
+
            
 
             page1_data = {
@@ -33,10 +36,12 @@ class ListingsSpider(scrapy.Spider):
                 "Price": Price,
                 "building area":building_area,
                 "land size": land_size,
+                "Listing_url": follow_url,
             }
 
             if detail_url:
-                yield scrapy.Request(url = f"https://www.property.co.zw/{detail_url}",
+                #follow request
+                yield scrapy.Request(url = follow_url,
                                      callback=self.listing_details,
                                      meta={"page1_data": page1_data})
                 
@@ -87,6 +92,7 @@ class ListingsSpider(scrapy.Spider):
         item['Price'] = page1_data.get('Price', 'NULL')
         item['building_area'] = page1_data.get('building area', 'NULL')
         item['land_area'] = page1_data.get('land size', 'NULL')
+        item['listing_url'] = page1_data.get('Listing_url', 'NULL')
 
 
         yield item

@@ -13,6 +13,7 @@ class ListingsItem(scrapy.Item):
 
 class PropertyListing(scrapy.Item):
     Listing_ref = scrapy.Field()
+    listing_url = scrapy.Field()
     Company = scrapy.Field()
     Agent = scrapy.Field()
     Price = scrapy.Field()
