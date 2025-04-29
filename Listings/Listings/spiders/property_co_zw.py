@@ -56,6 +56,9 @@ class ListingsSpider(scrapy.Spider):
         ##instantiate item object
         item = PropertyListing()
 
+        #Property type 
+        item['Property_type'] = "House"
+
         #here we extract details relating to the listings location
         location_details = response.xpath("//h1[@id='ListingTitle']/following-sibling::div/text()").get()
 

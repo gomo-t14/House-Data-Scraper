@@ -14,6 +14,7 @@ class ListingsItem(scrapy.Item):
 class PropertyListing(scrapy.Item):
     Listing_ref = scrapy.Field()
     listing_url = scrapy.Field()
+    Property_type = scrapy.Field(default = 'House')
     Company = scrapy.Field()
     Agent = scrapy.Field()
     Price = scrapy.Field()
@@ -35,6 +36,7 @@ class Propbook_info(scrapy.Item):
     listing_ref = scrapy.Field()
     listing_url = scrapy.Field()
     Real_estate_company = scrapy.Field()
+    Property_type = scrapy.Field()
     Price = scrapy.Field()
     Surbub = scrapy.Field()
     City = scrapy.Field()

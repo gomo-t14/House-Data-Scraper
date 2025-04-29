@@ -1,16 +1,28 @@
 import scrapy
 from  Listings.items import Propbook_info 
+from urllib.parse import urlparse
 
 
 #define spider
 class Prop_book(scrapy.Spider):
     name = "prop_book"
 
-    start_urls = [ "https://www.propertybook.co.zw/houses/for-sale",
+    start_urls = [ 
+        "https://www.propertybook.co.zw/houses/for-sale",
+        "https://www.propertybook.co.zw/flats_apartments/for-sale",
+        "https://www.propertybook.co.zw/townhouses_complexes_clusters/for-sale",
+        "https://www.propertybook.co.zw/cottages_garden-flats/for-sale",
+
 
     ]
 
     def parse(self, response):
+        url = response.url #current page url
+        parsed = urlparse(url)
+        path_parts = parsed.path.strip('/').split('/')    #access parts of the url
+        prop_category = path_parts[0] #type of property
+
+
         #find the listing cards
         #cards = response.xpath("//div[@class =  'propertyListings']//div[@class ='listingDetails']")
         cards = response.xpath("//div[contains(@class, 'listing')][@id]")
@@ -27,6 +39,7 @@ class Prop_book(scrapy.Spider):
             page1_data = {
                 "Listing_url":follow_url,
                 "Location_info": location_details,
+                "Property_type": prop_category,
 
             }
             #follow for more details
@@ -103,6 +116,9 @@ class Prop_book(scrapy.Spider):
 
         #listing url 
         item['listing_url'] = page1_data.get('Listing_url')or "NULL"
+
+        #Property type 
+        item['Property_type'] = page1_data.get('Property_type')or "NULL"
 
 
 
