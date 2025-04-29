@@ -29,3 +29,20 @@ class PropertyListing(scrapy.Item):
 
     Description = scrapy.Field()
     amenities = scrapy.Field()
+
+##item for propertybook zw 
+class Propbook_info(scrapy.Item):
+    listing_ref = scrapy.Field()
+    listing_url = scrapy.Field()
+    Real_estate_company = scrapy.Field()
+    Price = scrapy.Field()
+    Surbub = scrapy.Field()
+    City = scrapy.Field()
+    Province = scrapy.Field()
+    Listing_date =scrapy.Field()
+    bedrooms = scrapy.Field()
+    bathrooms = scrapy.Field()
+    lounges = scrapy.Field()
+    prop_area = scrapy.Field()
+    prop_description = scrapy.Field()
+    amenities = scrapy.Field()
