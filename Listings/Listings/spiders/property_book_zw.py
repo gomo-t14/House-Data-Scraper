@@ -54,17 +54,48 @@ class Prop_book(scrapy.Spider):
         bathrooms = response.xpath("normalize-space(//div[@class='property-info']//ul//li[i[contains(@class, 'fa-bath')]]/text()[normalize-space()])").get() or "NULL" #number of bathrooms
         lounges = response.xpath("normalize-space(//div[@class='property-info']//ul//li[i[contains(@class, 'fa-couch')]]/text()[normalize-space()])").get() or "NULL"#number of lounges
         prop_area = response.xpath("normalize-space(//div[@class='property-info']//ul//li[span[contains(@class, 'property-size')]]/text()[normalize-space()])").get() or "NULL"#property size 
-        
+
+        #property description
+        prop_description =  response.xpath("//div[@class='propertyDescription']//text()[normalize-space()]").getall()  
+
+        #Amenities
+        #get prop features section
+        amenities = response.xpath("//div[@class='row property-features']//div[@class='col-12 feature']")
+
+        amenities_dict = {} #dictionary to hold amaneites key value pairs
+
+        for m in amenities:
+            span_class = m.xpath(".//span[1]/@class").get()
+            #value = m.xpath(".//span[1]/text()").get()
+            #amenity = m.xpath(".//span[2]/text()").get()
+
+            #check if the class have a value or tick
+            if span_class == 'value':
+                value = m.xpath(".//span[1]/text()").get() #assign the value to value attribute 
+
+            else:
+                value = "1" #since it is only a check mark it signifies that only one instance of this amenity is available
+
+            amenity = m.xpath(".//span[2]/text()").get()
+
+            if amenity:
+                amenities_dict[amenity] = value
+
+
+         
         combined_data = {
-            **page1_data,
-            "Price":Price,
-            "Listing ref": listing_ref,
-            "Company": Real_estate_company,
-            "Date":Listing_date,
-            "bedrooms": bedrooms,
-            "bathrooms": bathrooms,
-            "Lounges": lounges,
-            "Property-area":prop_area,
+            #**page1_data,
+            #"Price":Price,
+            #"Listing ref": listing_ref,
+            #"Company": Real_estate_company,
+            #"Date":Listing_date,
+            #"bedrooms": bedrooms,
+            #"bathrooms": bathrooms,
+            #"Lounges": lounges,
+            #"Property-area":prop_area,
+            #"Property Description": prop_description,
+            "amenities": amenities_dict,
+
         }
         
         yield combined_data
