@@ -3,9 +3,18 @@ from Listings.items import PropertyListing
 
 
 class ListingsSpider(scrapy.Spider):
-    name = "prop_co_zw"
+    name = "prop_co_zw"#spider name
 
-    start_urls =["https://www.property.co.zw/houses-for-sale",]
+    start_urls =["https://www.property.co.zw/houses-for-sale",] #scraping urls
+
+    #spider pipeline
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'Listings.pipelines.PropcoPipeline': 1,
+        },
+    }
+
+
 
     def parse(self, response):
         #get listing cards
@@ -46,7 +55,7 @@ class ListingsSpider(scrapy.Spider):
                                      meta={"page1_data": page1_data})
                 
         #pagination
-        yield scrapy.Request(url = next_page_url , callback = self.parse)
+        #yield scrapy.Request(url = next_page_url , callback = self.parse)
 
 
     def listing_details(self,response):
