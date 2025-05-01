@@ -16,6 +16,14 @@ class Prop_book(scrapy.Spider):
 
     ]
 
+    #spider pipeline
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'Listings.pipelines.PropbookPipeline': 5,
+        },
+    }
+
+
     def parse(self, response):
         url = response.url #current page url
         parsed = urlparse(url)

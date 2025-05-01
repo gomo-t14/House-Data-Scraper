@@ -55,7 +55,7 @@ class ListingsSpider(scrapy.Spider):
                                      meta={"page1_data": page1_data})
                 
         #pagination
-        #yield scrapy.Request(url = next_page_url , callback = self.parse)
+        yield scrapy.Request(url = next_page_url , callback = self.parse)
 
 
     def listing_details(self,response):
