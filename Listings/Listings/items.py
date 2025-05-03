@@ -17,7 +17,7 @@ class PropertyListing(scrapy.Item):
     Property_type = scrapy.Field(default = 'House')
     Company = scrapy.Field()
     Agent = scrapy.Field()
-    Price = scrapy.Field()
+    Price_2025 = scrapy.Field()
 
     Surbub = scrapy.Field()
     City = scrapy.Field()
@@ -30,6 +30,18 @@ class PropertyListing(scrapy.Item):
 
     Description = scrapy.Field()
     amenities = scrapy.Field()
+
+    Price_2015 = scrapy.Field()
+    Price_2016 = scrapy.Field()
+    Price_2017 = scrapy.Field()
+    Price_2018 = scrapy.Field()
+    Price_2019 = scrapy.Field()
+    Price_2020 = scrapy.Field()
+    Price_2021 = scrapy.Field()
+    Price_2022 = scrapy.Field()
+    Price_2023 = scrapy.Field()
+    Price_2024 = scrapy.Field()
+
 
 ##item for propertybook zw 
 class Propbook_info(scrapy.Item):

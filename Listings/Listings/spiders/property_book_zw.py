@@ -32,15 +32,14 @@ class Prop_book(scrapy.Spider):
 
 
         #find the listing cards
-        #cards = response.xpath("//div[@class =  'propertyListings']//div[@class ='listingDetails']")
         cards = response.xpath("//div[contains(@class, 'listing')][@id]")
 
         next_page_url = response.xpath("//a[@class= 'page-link'][@rel = 'next']/@href").get() #url for next page 
 
 
         for card in cards:
-            follow_url = card.xpath(".//a/@href").get() or "NULL" # url to more details
-            location_details = card.xpath("normalize-space(.//div[@class= 'locationDetail']/text())").get() or "NULL" #location info
+            follow_url = card.xpath(".//a/@href").get() # # url to more details
+            location_details = card.xpath("normalize-space(.//div[@class= 'locationDetail']/text())").get() # #location info
 
 
             #method meta store scraped data for next response
@@ -67,25 +66,25 @@ class Prop_book(scrapy.Spider):
 
         #get details from section 1
         prop_section1 = response.xpath("//div[@class ='property-title']")#containes price, listing ref 
-        item['Price'] = prop_section1.xpath("normalize-space(.//h4/text())").get() or "NULL" #listing price
-        item['listing_ref'] = prop_section1.xpath("normalize-space(.//span/text())").get() or "NULL" # REF ID
+        item['Price'] = prop_section1.xpath("normalize-space(.//h4/text())").get() ##listing price
+        item['listing_ref'] = prop_section1.xpath("normalize-space(.//span/text())").get() # REF ID
 
 
-        item['Real_estate_company'] = response.xpath("//div[@class = 'block']//div//h5/text()").get() or "NULL" #company name
+        item['Real_estate_company'] = response.xpath("//div[@class = 'block']//div//h5/text()").get() #company name
 
 
         #get details from section 2
         prop_section2 = response.xpath("//div[@class = 'property-info']")
-        item['Listing_date'] =  prop_section2.xpath("normalize-space(.//div[@class = 'listed-date']/text())").get() or "NULL" #date listing was published
+        item['Listing_date'] =  prop_section2.xpath("normalize-space(.//div[@class = 'listed-date']/text())").get()  #date listing was published
 
        
-        item['bedrooms'] = response.xpath("normalize-space(//div[@class='property-info']//ul//li[i[contains(@class, 'fa-bed')]]/text()[normalize-space()])").get() or "NULL" #bedrooms        
-        item['bathrooms'] = response.xpath("normalize-space(//div[@class='property-info']//ul//li[i[contains(@class, 'fa-bath')]]/text()[normalize-space()])").get() or "NULL" #number of bathrooms
-        item['lounges'] = response.xpath("normalize-space(//div[@class='property-info']//ul//li[i[contains(@class, 'fa-couch')]]/text()[normalize-space()])").get() or "NULL"#number of lounges
-        item['prop_area'] = response.xpath("normalize-space(//div[@class='property-info']//ul//li[span[contains(@class, 'property-size')]]/text()[normalize-space()])").get() or "NULL"#property size 
+        item['bedrooms'] = response.xpath("normalize-space(//div[@class='property-info']//ul//li[i[contains(@class, 'fa-bed')]]/text()[normalize-space()])").get()  #bedrooms        
+        item['bathrooms'] = response.xpath("normalize-space(//div[@class='property-info']//ul//li[i[contains(@class, 'fa-bath')]]/text()[normalize-space()])").get() #number of bathrooms
+        item['lounges'] = response.xpath("normalize-space(//div[@class='property-info']//ul//li[i[contains(@class, 'fa-couch')]]/text()[normalize-space()])").get() #number of lounges
+        item['prop_area'] = response.xpath("normalize-space(//div[@class='property-info']//ul//li[span[contains(@class, 'property-size')]]/text()[normalize-space()])").get() #property size 
 
         #property description
-        item['prop_description'] =  response.xpath("//div[@class='propertyDescription']//text()[normalize-space()]").getall() or "NULL" 
+        item['prop_description'] =  response.xpath("//div[@class='propertyDescription']//text()[normalize-space()]").getall()  
 
         #Amenities
         
@@ -96,17 +95,15 @@ class Prop_book(scrapy.Spider):
 
         for m in amenities:
             span_class = m.xpath(".//span[1]/@class").get()
-            #value = m.xpath(".//span[1]/text()").get()
-            #amenity = m.xpath(".//span[2]/text()").get()
 
             #check if the class have a value or tick
             if span_class == 'value':
-                value = m.xpath(".//span[1]/text()").get()or "NULL"  #assign the value to value attribute 
+                value = m.xpath(".//span[1]/text()").get()#or "NULL"  #assign the value to value attribute 
 
             else:
                 value = "1" #since it is only a check mark it signifies that only one instance of this amenity is available
 
-            amenity = m.xpath(".//span[2]/text()").get()or "NULL"
+            amenity = m.xpath(".//span[2]/text()").get()#or "NULL"
 
             if amenity:
                 amenities_dict[amenity] = value
@@ -118,33 +115,15 @@ class Prop_book(scrapy.Spider):
         #set the data into descriptive variables
         temp_location =  page1_data.get("Location_info").split(",")
 
-        item['Surbub'] = temp_location[0].strip() if len(temp_location) > 0 else "NULL"
-        item['City'] = temp_location[1].strip() if len(temp_location) > 0 else "NULL"
-        item['Province'] = temp_location[2].strip() if len(temp_location) > 0 else "NULL"
+        item['Surbub'] = temp_location[0].strip() 
+        item['City'] = temp_location[1].strip() 
+        item['Province'] = temp_location[2].strip() 
 
         #listing url 
-        item['listing_url'] = page1_data.get('Listing_url')or "NULL"
+        item['listing_url'] = page1_data.get('Listing_url')
 
         #Property type 
-        item['Property_type'] = page1_data.get('Property_type')or "NULL"
+        item['Property_type'] = page1_data.get('Property_type')
 
 
-
-
-        '''
-        combined_data = {
-            #**page1_data,
-            #"Price":Price,
-            #"Listing ref": listing_ref,
-            #"Company": Real_estate_company,
-            #"Date":Listing_date,
-            #"bedrooms": bedrooms,
-            #"bathrooms": bathrooms,
-            #"Lounges": lounges,
-            #"Property-area":prop_area,
-            #"Property Description": prop_description,
-            "amenities": amenities_dict,
-
-        }
-        '''
         yield item

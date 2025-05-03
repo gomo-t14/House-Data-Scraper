@@ -1,5 +1,6 @@
 import scrapy
 from Listings.items import PropertyListing
+import json
 
 
 class ListingsSpider(scrapy.Spider):
@@ -13,7 +14,6 @@ class ListingsSpider(scrapy.Spider):
             'Listings.pipelines.PropcoPipeline': 1,
         },
     }
-
 
 
     def parse(self, response):
@@ -74,19 +74,19 @@ class ListingsSpider(scrapy.Spider):
         #set the data into descriptive variables
         temp_location =  location_details.split(",")
 
-        item['Surbub'] = temp_location[0].strip() if len(temp_location) > 0 else "NULL"
-        item['City'] = temp_location[1].strip() if len(temp_location) > 0 else "NULL"
-        item['Province'] = temp_location[2].strip() if len(temp_location) > 0 else "NULL"
+        item['Surbub'] = temp_location[0].strip() or None 
+        item['City'] = temp_location[1].strip() or None 
+        item['Province'] = temp_location[2].strip() or None 
 
         #Listing Specifications
         
-        item['bedrooms'] = response.xpath("normalize-space(//div[@class='bed']/text()[normalize-space()])").get() or "NULL"
-        item['bathrooms']  = response.xpath("normalize-space(//div[@class='bath']//text()[normalize-space()])").get() or "NULL" #number of bathrooms
+        item['bedrooms'] = response.xpath("normalize-space(//div[@class='bed']/text()[normalize-space()])").get() or None 
+        item['bathrooms']  = response.xpath("normalize-space(//div[@class='bath']//text()[normalize-space()])").get() or None 
 
 
         #Listing Description
-        Description_extract = response.xpath("//h2[normalize-space(text())='Description']/following-sibling::div[br]//text()").getall()
-        item['Description'] = ' '.join([text.strip() for text in Description_extract if text.strip()]) or "NULL"
+        Description_extract = response.xpath("//h2[normalize-space(text())='Description']/following-sibling::div[br]//text()").getall() or None 
+        item['Description'] = ' '.join([text.strip() for text in Description_extract if text.strip()]) 
 
 
         #Amenities
@@ -94,17 +94,30 @@ class ListingsSpider(scrapy.Spider):
 
 
         #Listing ref
-        item['Listing_ref'] = response.xpath("//span[contains(text(), 'Listing ref')]/text()").get() or "NULL"
+        item['Listing_ref'] = response.xpath("//span[contains(text(), 'Listing ref')]/text()").get() or None 
         amenities_list = [m.xpath("./div[2]/text()").get() for m in amenities]
-        item['amenities'] = [a for a in amenities_list if a] or ['NULL']
+        item['amenities'] = [a for a in amenities_list if a] 
+
+        #lets get the labels and values list
+        data_str = response.xpath('//canvas/@data-chart-data').get()or None  # returns json object of price and labels
+        data = json.loads(data_str) #parse json object 
+        values = data["Values"] #list of price values
+        labels = data["Labels"] #list of year labels
+
+        #add values to item model
+        for label, value in zip(labels, values):
+            item[f'Price_{label}'] = value
+
+
+
 
         #Adding page1 data to item model
-        item['Company'] = page1_data.get('Company', 'NULL')
-        item['Agent'] = page1_data.get('Agent', 'NULL')
-        item['Price'] = page1_data.get('Price', 'NULL')
-        item['building_area'] = page1_data.get('building area', 'NULL')
-        item['land_area'] = page1_data.get('land size', 'NULL')
-        item['listing_url'] = page1_data.get('Listing_url', 'NULL')
+        item['Company'] = page1_data.get('Company')
+        item['Agent'] = page1_data.get('Agent')
+        item['Price_2025'] = page1_data.get('Price')
+        item['building_area'] = page1_data.get('building area')
+        item['land_area'] = page1_data.get('land size')
+        item['listing_url'] = page1_data.get('Listing_url')
 
 
         yield item
